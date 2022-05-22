@@ -51,7 +51,8 @@ const urlCode = async (req, res) => {
             await SET_ASYNC(`${Code}`, JSON.stringify(urlData), "EX", 30)
             return res.redirect(302, urlData.longUrl)
         }
-    }
+    }                                                       
+                                             
     // exception handler
     catch (err) {
         console.error(err)

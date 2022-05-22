@@ -23,6 +23,7 @@ redisClient.on("connect", async function () {
 //Connection setup for redis
 
 const SET_ASYNC = promisify(redisClient.SET).bind(redisClient);
+
 const GET_ASYNC = promisify(redisClient.GET).bind(redisClient);
 
 const urlCreate = async function (req, res) {
@@ -35,6 +36,10 @@ const urlCreate = async function (req, res) {
     if (!Object.keys(data).length > 0) {
       return res.status(400).send("Invalid request parameter");
     }
+
+
+    
+
     const { longUrl } = data; // destructure the longUrl from req.body.longUrl
     // check longurl present or not
     if (!longUrl) {
@@ -66,6 +71,8 @@ const urlCreate = async function (req, res) {
     // invoking the Url model and saving to the DB
     let url = { longUrl, shortUrl, urlCode };
     const code = await urlModel.create(url);
+    const x = await urlModel.find({longUrl:longUrl})
+    if(x.longUrl) return  res.status(401).send({status: true,message: "the url is Already Present"})
     await SET_ASYNC(`${code.longUrl}`, JSON.stringify(code),"EX", 50);
 
     res.status(201).send({status: true,message: "You created Short Url for this Long Url",
